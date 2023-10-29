@@ -91,3 +91,94 @@ window.addEventListener("load", () => {
 });
 
 // script.js
+const cursor = document.querySelector(".cursor");
+var timeout;
+
+document.addEventListener("mousemove", (e) => {
+  let x = e.clientX;
+  let y = e.clientY;
+
+  cursor.style.top = y + "px";
+  cursor.style.left = x + "px";
+  cursor.style.display = "block";
+
+  function mouseStopped() {
+    cursor.style.display = "none";
+  }
+  clearTimeout(timeout);
+  timeout = setTimeout(mouseStopped, 1000);
+});
+
+document.addEventListener("mouseout", () => {
+  cursor.style.display = "none";
+});
+
+// Add the following code to resize the cursor when hovering over links and buttons
+const interactiveElements = document.querySelectorAll("a, button");
+interactiveElements.forEach((element) => {
+  element.addEventListener("mouseenter", () => {
+    cursor.style.width = "40px"; // Adjust the desired width
+    cursor.style.height = "40px"; // Adjust the desired height
+  });
+
+  element.addEventListener("mouseleave", () => {
+    cursor.style.width = "20px"; // Restore the original width
+    cursor.style.height = "20px"; // Restore the original height
+  });
+});
+
+
+const projectsContainer = document.querySelector(".projects-container");
+const projectWidth = 300; // Adjust this value to match the width of your individual projects
+const autoScrollInterval = 3000; // Adjust the auto-scrolling interval (in milliseconds)
+
+let scrollPosition = 0;
+let scrollDirection = 1; // 1 for scrolling right, -1 for scrolling left
+
+const scrollLeft = () => {
+    scrollPosition -= projectWidth;
+    if (scrollPosition < 0) {
+        scrollPosition = projectsContainer.scrollWidth - projectsContainer.clientWidth;
+    }
+    projectsContainer.scrollTo({
+        left: scrollPosition,
+        behavior: "smooth"
+    });
+};
+
+const scrollRight = () => {
+    scrollPosition += projectWidth;
+    if (scrollPosition >= projectsContainer.scrollWidth - projectsContainer.clientWidth) {
+        scrollPosition = 0;
+    }
+    projectsContainer.scrollTo({
+        left: scrollPosition,
+        behavior: "smooth"
+    });
+};
+
+// Add event listeners to scroll left and right
+document.querySelector(".scroll-left").addEventListener("click", scrollLeft);
+document.querySelector(".scroll-right").addEventListener("click", scrollRight);
+
+// Function to auto scroll
+function autoScroll() {
+    if (scrollDirection === 1) {
+        scrollRight();
+    } else {
+        scrollLeft();
+    }
+}
+
+// Set an interval to call the autoScroll function at the specified interval
+const autoScrollIntervalId = setInterval(autoScroll, autoScrollInterval);
+
+// Stop auto scrolling when the mouse hovers over the projects container
+projectsContainer.addEventListener("mouseenter", () => {
+    clearInterval(autoScrollIntervalId);
+});
+
+// Resume auto scrolling when the mouse leaves the projects container
+projectsContainer.addEventListener("mouseleave", () => {
+    autoScrollIntervalId = setInterval(autoScroll, autoScrollInterval);
+});
